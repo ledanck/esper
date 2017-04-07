@@ -271,4 +271,13 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBaseGr
     public Collection<Object> getGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
         return aggregatorsPerGroup.keySet();
     }
+
+    public void applyClear() {
+        for (int i = 0; i < currentAggregatorMethods.length; i++) {
+            currentAggregatorMethods[i].clear();
+        }
+        for (int i = 0; i < currentAggregatorStates.length; i++) {
+            currentAggregatorStates[i].clear();
+        }
+    }
 }

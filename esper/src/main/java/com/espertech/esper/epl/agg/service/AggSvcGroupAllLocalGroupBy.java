@@ -49,4 +49,18 @@ public class AggSvcGroupAllLocalGroupBy extends AggSvcGroupLocalGroupByBase {
         }
         return col.getPair().getAccessor().getValue(row.getStates()[col.getPair().getSlot()], eventsPerStream, isNewData, exprEvaluatorContext);
     }
+
+    public void applyClear(){
+        //TODO
+        if(aggregatorsTopLevel != null){
+            for (int i=0; i<aggregatorsTopLevel.length; i++){
+                aggregatorsTopLevel[i].clear();
+            }
+        }
+        if(statesTopLevel != null){
+            for (int i=0; i<statesTopLevel.length; i++){
+                statesTopLevel[i].clear();
+            }
+        }
+    }
 }

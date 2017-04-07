@@ -65,4 +65,7 @@ public class AggSvcGroupByWTableRollupMultiKeyImpl extends AggSvcGroupByWTableBa
 
         this.currentGroupKey = key;
     }
+    public void applyClear() {
+        //TODO
+    }
 }

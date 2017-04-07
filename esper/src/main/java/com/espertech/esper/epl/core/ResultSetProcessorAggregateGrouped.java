@@ -17,6 +17,8 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.context.util.AgentInstanceContext;
+import com.espertech.esper.epl.agg.service.AggSvcGroupByRefcountedNoAccessImpl;
+import com.espertech.esper.epl.agg.service.AggSvcGroupByRefcountedWAccessImpl;
 import com.espertech.esper.epl.agg.service.AggregationRowRemovedCallback;
 import com.espertech.esper.epl.agg.service.AggregationService;
 import com.espertech.esper.epl.expression.core.ExprEvaluator;
@@ -264,6 +266,9 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor, A
             }
 
             countOutputRows++;
+
+            //一旦规则条件满足，则清零聚合状态
+            aggregationService.applyClear();
         }
 
         // Resize if some rows were filtered out

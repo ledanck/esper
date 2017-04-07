@@ -94,4 +94,6 @@ public class AggregationServiceTable implements AggregationService {
     public AggregationService getContextPartitionAggregationService(int agentInstanceId) {
         return this;
     }
+
+    public void applyClear() {}
 }

@@ -34,4 +34,7 @@ public class AggSvcGroupByWTableImpl extends AggSvcGroupByWTableBase {
     public void applyLeaveInternal(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext) {
         applyLeaveGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
     }
+    public void applyClear() {
+        //TODO
+    }
 }

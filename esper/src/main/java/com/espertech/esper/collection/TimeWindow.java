@@ -13,6 +13,8 @@ package com.espertech.esper.collection;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.DataWindowViewFactory;
 import com.espertech.esper.view.ViewDataVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -27,10 +29,11 @@ import java.util.*;
  * collection reflecting the timestamp order rather then any sorted map or linked hash map for performance reasons.
  */
 public final class TimeWindow implements Iterable {
+    private static final Logger logger = LoggerFactory.getLogger("com.hansight.esper.TimeWindow");
+
     private ArrayDeque<TimeWindowPair> window;
     private Map<EventBean, TimeWindowPair> reverseIndex;
     private int size;
-
     /**
      * Ctor.
      *
@@ -62,17 +65,20 @@ public final class TimeWindow implements Iterable {
      * @param timestamp - the time slot for the event
      * @param bean      - event to add
      */
-    public final void add(long timestamp, EventBean bean) {
+    public final boolean add(long timestamp, EventBean bean) {
+        if(window == null){
+            window = new ArrayDeque<TimeWindowPair>();
+            reverseIndex = new HashMap<EventBean, TimeWindowPair>();
+        }
         // Empty window
         if (window.isEmpty()) {
             TimeWindowPair pair = new TimeWindowPair(timestamp, bean);
             window.add(pair);
-
             if (reverseIndex != null) {
                 reverseIndex.put(bean, pair);
             }
             size = 1;
-            return;
+            return true;
         }
 
         TimeWindowPair lastPair = window.getLast();
@@ -95,16 +101,25 @@ public final class TimeWindow implements Iterable {
                 reverseIndex.put(bean, lastPair);
             }
             size++;
-            return;
+            return true;
         }
-
-        // Append to window
-        TimeWindowPair pair = new TimeWindowPair(timestamp, bean);
-        if (reverseIndex != null) {
-            reverseIndex.put(bean, pair);
+        //保证队列中数据必然是有序的，乱序数据直接丢弃
+        if (lastPair.getTimestamp()-500 <= timestamp) {
+            // Append to window
+            TimeWindowPair pair = new TimeWindowPair(timestamp, bean);
+            if (reverseIndex != null) {
+                reverseIndex.put(bean, pair);
+            }
+            window.add(pair);
+            size++;
+            return true;
         }
-        window.add(pair);
-        size++;
+        else {
+            if(logger.isDebugEnabled())
+                logger.debug("发现乱序数据尝试添加进窗口。当前窗口数据数量：{}, 待添加数据时间戳：{}. 窗口数据最大时间戳：{}", window.size(), timestamp, getNewestTimestamp());
+                logger.debug("{} ## {}", bean.getUnderlying(), window.getLast().getEventHolder());
+        }
+        return false;
     }
 
     /**
@@ -140,7 +155,7 @@ public final class TimeWindow implements Iterable {
      * @return a list of events expired and removed from the window, or null if none expired
      */
     public final ArrayDeque<EventBean> expireEvents(long expireBefore) {
-        if (window.isEmpty()) {
+        if (window==null || window.isEmpty()) {
             return null;
         }
 
@@ -164,7 +179,6 @@ public final class TimeWindow implements Iterable {
             }
 
             window.removeFirst();
-
             if (window.isEmpty()) {
                 break;
             }
@@ -180,9 +194,13 @@ public final class TimeWindow implements Iterable {
         }
 
         size -= resultBeans.size();
+
+        if(window.isEmpty()){
+            window = null;//new ArrayDeque<TimeWindowPair>();
+            reverseIndex = null;//new HashMap<EventBean, TimeWindowPair>();
+        }
         return resultBeans;
     }
-
     /**
      * Returns event iterator.
      *
@@ -199,11 +217,26 @@ public final class TimeWindow implements Iterable {
      * @return null if empty, oldest timestamp if not empty
      */
     public final Long getOldestTimestamp() {
-        if (window.isEmpty()) {
+        if (window== null || window.isEmpty()) {
             return null;
         }
         if (window.getFirst().getEventHolder() != null) {
             return window.getFirst().getTimestamp();
+        }
+        for (TimeWindowPair pair : window) {
+            if (pair.getEventHolder() != null) {
+                return pair.getTimestamp();
+            }
+        }
+        return null;
+    }
+
+    public final Long getNewestTimestamp() {
+        if (window==null || window.isEmpty()) {
+            return null;
+        }
+        if (window.getLast().getEventHolder() != null) {
+            return window.getLast().getTimestamp();
         }
         for (TimeWindowPair pair : window) {
             if (pair.getEventHolder() != null) {

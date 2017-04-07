@@ -40,4 +40,7 @@ public class AggSvcGroupByWTableRollupSingleKeyImpl extends AggSvcGroupByWTableB
             applyLeaveGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
     }
+    public void applyClear() {
+        //TODO
+    }
 }

@@ -103,7 +103,9 @@ public abstract class ViewSupport implements View {
             return;
         }
         if (size == 1) {
-            children[0].update(newData, oldData);
+            if(newData[0] != null) {
+                children[0].update(newData, oldData);
+            }
         } else {
             // since there often is zero or one view underneath, the iteration case is slower
             for (View child : children) {

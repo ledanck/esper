@@ -77,4 +77,13 @@ public class AggSvcGroupByLocalGroupBy extends AggSvcGroupLocalGroupByBase {
         }
         return col.getPair().getAccessor().getValue(row.getStates()[col.getPair().getSlot()], eventsPerStream, isNewData, exprEvaluatorContext);
     }
+
+    public void applyClear() {
+        for (int i = 0; i < aggregatorsTopLevel.length; i++) {
+            aggregatorsTopLevel[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+        for (int i = 0; i < currentAggregatorStates.length; i++) {
+            currentAggregatorStates[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+    }
 }

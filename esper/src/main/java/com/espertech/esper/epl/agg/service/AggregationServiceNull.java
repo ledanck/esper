@@ -85,4 +85,6 @@ public class AggregationServiceNull implements AggregationService {
     public AggregationService getContextPartitionAggregationService(int agentInstanceId) {
         return this;
     }
+
+    public void applyClear() {}
 }

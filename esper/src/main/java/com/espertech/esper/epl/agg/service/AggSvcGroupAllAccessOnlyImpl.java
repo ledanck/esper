@@ -127,4 +127,10 @@ public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, Aggrega
     public AggregationService getContextPartitionAggregationService(int agentInstanceId) {
         return this;
     }
+
+    public void applyClear() {
+        for (int i=0; i<states.length; i++){
+            states[i].clear();
+        }
+    }
 }

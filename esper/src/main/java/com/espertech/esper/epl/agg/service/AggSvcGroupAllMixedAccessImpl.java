@@ -165,4 +165,13 @@ public class AggSvcGroupAllMixedAccessImpl extends AggregationServiceBaseUngroup
     public Collection<Object> getGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
         return null;
     }
+
+    public void applyClear() {
+        for (int i = 0; i < aggregators.length; i++) {
+            aggregators[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+        for (int i = 0; i < states.length; i++){
+            states[i].clear();//情况单事件方法事件集合，主要作用于first、last、window
+        }
+    }
 }

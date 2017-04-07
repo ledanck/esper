@@ -50,6 +50,39 @@ public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBaseG
         aggregatorsPerGroup.clear();
     }
 
+    //清除分组下的聚合状态
+    public void applyClear(Object groupByKey, ExprEvaluatorContext exprEvaluatorContext) {
+        if (InstrumentationHelper.ENABLED) {
+            InstrumentationHelper.get().qAggregationGroupedApplyEnterLeave(true, aggregators.length, 0, groupByKey);
+        }
+        handleRemovedKeys();
+
+        AggregationMethodRow row = aggregatorsPerGroup.get(groupByKey);
+
+        // The aggregators for this group do not exist, need to create them from the prototypes
+        AggregationMethod[] groupAggregators;
+        if (row == null) {
+            return;
+        } else {
+            groupAggregators = row.getMethods();
+            row.increaseRefcount();
+        }
+
+        // For this row, evaluate sub-expressions, enter result
+        currentAggregatorRow = groupAggregators;
+        for (int i = 0; i < evaluators.length; i++) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.get().qAggNoAccessEnterLeave(true, i, groupAggregators[i], aggregators[i].getAggregationExpression());
+            }
+            groupAggregators[i].clear();
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.get().aAggNoAccessEnterLeave(true, i, groupAggregators[i]);
+            }
+        }
+        if (InstrumentationHelper.ENABLED) {
+            InstrumentationHelper.get().aAggregationGroupedApplyEnterLeave(true);
+        }
+    }
     public void applyEnter(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext) {
         if (InstrumentationHelper.ENABLED) {
             InstrumentationHelper.get().qAggregationGroupedApplyEnterLeave(true, aggregators.length, 0, groupByKey);
@@ -191,5 +224,10 @@ public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBaseG
     public Collection<Object> getGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
         handleRemovedKeys();
         return aggregatorsPerGroup.keySet();
+    }
+    public void applyClear() {
+        for (int i = 0; i < currentAggregatorRow.length; i++) {
+            currentAggregatorRow[i].clear();
+        }
     }
 }

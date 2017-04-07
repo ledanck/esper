@@ -64,4 +64,6 @@ public interface AggregationService extends AggregationResultFuture, StopCallbac
     public boolean isGrouped();
 
     AggregationService getContextPartitionAggregationService(int agentInstanceId);
+
+    public void applyClear();
 }

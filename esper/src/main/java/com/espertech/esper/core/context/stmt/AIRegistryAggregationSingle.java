@@ -96,4 +96,7 @@ public class AIRegistryAggregationSingle implements AIRegistryAggregation, Aggre
 
     public void stop() {
     }
+    public void applyClear(){
+        //TODO
+    }
 }

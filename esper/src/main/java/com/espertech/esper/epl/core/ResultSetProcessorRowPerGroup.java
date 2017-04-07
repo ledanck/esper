@@ -255,6 +255,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor, Aggreg
             }
 
             count++;
+
+            //一旦规则条件满足，则清零聚合状态
+            aggregationService.applyClear();
         }
 
         // Resize if some rows were filtered out

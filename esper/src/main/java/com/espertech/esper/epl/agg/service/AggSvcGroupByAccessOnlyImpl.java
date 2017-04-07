@@ -159,4 +159,10 @@ public class AggSvcGroupByAccessOnlyImpl implements AggregationService, Aggregat
     public AggregationService getContextPartitionAggregationService(int agentInstanceId) {
         return this;
     }
+
+    public void applyClear() {
+        for (int i = 0; i < currentAccesses.length; i++) {
+            currentAccesses[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+    }
 }

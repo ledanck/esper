@@ -232,4 +232,13 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBaseGrouped 
     public Collection<Object> getGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
         return aggregatorsPerGroup.keySet();
     }
+
+    public void applyClear() {
+        for (int i = 0; i < currentAggregatorRow.getMethods().length; i++) {
+            currentAggregatorRow.getMethods()[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+        for (int i = 0; i < currentAggregatorRow.getStates().length; i++) {
+            currentAggregatorRow.getStates()[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+    }
 }

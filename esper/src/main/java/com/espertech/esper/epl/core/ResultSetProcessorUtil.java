@@ -12,6 +12,9 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.epl.agg.service.AggSvcGroupAllMixedAccessImpl;
+import com.espertech.esper.epl.agg.service.AggSvcGroupByRefcountedNoAccessImpl;
+import com.espertech.esper.epl.agg.service.AggSvcGroupByRefcountedWAccessImpl;
 import com.espertech.esper.epl.agg.service.AggregationService;
 import com.espertech.esper.epl.expression.core.ExprEvaluator;
 import com.espertech.esper.epl.expression.core.ExprEvaluatorContext;
@@ -21,6 +24,10 @@ import com.espertech.esper.view.Viewable;
 import java.util.*;
 
 public class ResultSetProcessorUtil {
+    public static void applyAggClearResult(AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext, EventBean[] newData, EventBean[] oldData, EventBean[] eventsPerStream) {
+        //一旦规则条件满足，则清零聚合状态
+        aggregationService.applyClear();
+    }
     public static void applyAggViewResult(AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext, EventBean[] newData, EventBean[] oldData, EventBean[] eventsPerStream) {
         if (newData != null) {
             // apply new data to aggregates

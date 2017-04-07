@@ -106,4 +106,7 @@ public class AIRegistryAggregationMultiPerm implements AIRegistryAggregation {
 
     public void stop() {
     }
+    public void applyClear(){
+        //TODO
+    }
 }

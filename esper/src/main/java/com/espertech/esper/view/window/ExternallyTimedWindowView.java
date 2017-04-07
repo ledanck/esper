@@ -18,6 +18,7 @@ import com.espertech.esper.core.context.util.AgentInstanceViewFactoryChainContex
 import com.espertech.esper.epl.expression.core.ExprEvaluator;
 import com.espertech.esper.epl.expression.core.ExprNode;
 import com.espertech.esper.epl.expression.time.ExprTimePeriodEvalDeltaConst;
+import com.espertech.esper.epl.expression.time.ExprTimePeriodEvalDeltaConstGivenDelta;
 import com.espertech.esper.metrics.instrumentation.InstrumentationHelper;
 import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.view.*;
@@ -115,7 +116,9 @@ public class ExternallyTimedWindowView extends ViewSupport implements DataWindow
         if (newData != null) {
             for (int i = 0; i < newData.length; i++) {
                 timestamp = getLongValue(newData[i]);
-                timeWindow.add(timestamp, newData[i]);
+                if(!timeWindow.add(timestamp, newData[i])){
+                    newData[i] = null;
+                };
             }
         }
 
@@ -178,6 +181,7 @@ public class ExternallyTimedWindowView extends ViewSupport implements DataWindow
     private long getLongValue(EventBean obj) {
         eventsPerStream[0] = obj;
         Number num = (Number) timestampExpressionEval.evaluate(eventsPerStream, true, agentInstanceViewFactoryContext);
+        eventsPerStream[0] = null;//坑爹的泄露！！
         return num.longValue();
     }
 

@@ -368,4 +368,13 @@ public class AggSvcGroupByRefcountedWAccessRollupImpl extends AggregationService
         }
         return count;
     }
+
+    public void applyClear() {
+        for (int i = 0; i < currentAggregatorMethods.length; i++) {
+            currentAggregatorMethods[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+        for (int i = 0; i < currentAggregatorStates.length; i++) {
+            currentAggregatorStates[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+    }
 }

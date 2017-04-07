@@ -175,6 +175,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor {
         if (InstrumentationHelper.ENABLED) {
             InstrumentationHelper.get().aResultSetProcessUngroupedNonfullyAgg(selectNewEvents, selectOldEvents);
         }
+        ResultSetProcessorUtil.applyAggClearResult(aggregationService, exprEvaluatorContext, newData, oldData, eventsPerStream);
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 

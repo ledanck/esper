@@ -158,4 +158,10 @@ public class AggSvcGroupByNoAccessImpl extends AggregationServiceBaseGrouped {
     public Collection<Object> getGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
         return aggregatorsPerGroup.keySet();
     }
+
+    public void applyClear() {
+        for (int i = 0; i < currentAggregatorRow.length; i++) {
+            currentAggregatorRow[i].clear();//重置聚合结果状态，例如count(*)=0
+        }
+    }
 }

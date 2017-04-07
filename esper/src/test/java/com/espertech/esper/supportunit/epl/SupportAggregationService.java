@@ -91,4 +91,9 @@ public class SupportAggregationService implements AggregationService {
     public AggregationService getContextPartitionAggregationService(int agentInstanceId) {
         return this;
     }
+
+    @Override
+    public void applyClear() {
+        //TODO
+    }
 }
